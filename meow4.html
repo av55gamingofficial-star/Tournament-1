@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FF ARENA - Live Tournaments, Wallet, Leaderboard & Guild Bots</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ff4757; border-radius: 4px; }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
+        }
+        .gaming-glow { animation: pulseGlow 2s infinite; }
+    </style>
+</head>
+<body class="bg-[#090a0f] text-slate-100 font-sans antialiased h-screen flex flex-col">
+
+    <!-- Top Navbar -->
+    <header class="bg-[#0f111a] border-b border-red-900/40 px-4 py-3 flex justify-between items-center shadow-lg z-10">
+        <div class="flex items-center space-x-2">
+            <div class="bg-gradient-to-br from-red-600 to-rose-700 text-white p-2 rounded-xl font-black text-lg shadow-lg shadow-red-600/30">
+                <i class="fa-solid fa-fire"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-black tracking-wider text-red-500 drop-shadow">FF ARENA</h1>
+                <span class="text-[9px] text-amber-400 font-mono tracking-widest uppercase">PRO ESPORTS</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <!-- Wallet Coin Click Button -->
+            <button onclick="openWalletMenu()" class="bg-[#161925] px-3 py-1.5 rounded-full border border-amber-500/40 flex items-center space-x-1.5 text-xs hover:border-amber-400 transition shadow-md">
+                <i class="fa-solid fa-coins text-amber-400 animate-bounce"></i>
+                <span id="user-coins" class="font-bold text-amber-400">500</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-amber-500 ml-1"></i>
+            </button>
+            <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center font-bold text-xs shadow border border-red-400">
+                MAX
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4 pb-24">
+
+        <!-- LIVE NOW GAMING BANNER -->
+        <div class="bg-gradient-to-r from-red-950 via-rose-900 to-[#12080a] rounded-2xl p-4 border border-red-600/60 shadow-xl relative overflow-hidden gaming-glow">
+            <div class="absolute -right-6 -bottom-6 text-red-600/10 text-9xl font-black pointer-events-none">
+                <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <div class="relative z-10 space-y-2">
+                <div class="inline-flex items-center space-x-2 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow tracking-wider uppercase animate-pulse">
+                    <span class="w-2 h-2 bg-white rounded-full animate-ping"></span>
+                    <span>🔥 THE WEBSITE IS LIVE NOW</span>
+                </div>
+                <h2 class="text-xl font-black text-white tracking-wide">14+ CUSTOM ROOMS & GUILD BOTS ACTIVE!</h2>
+                <p class="text-xs text-slate-300">Owner: <span class="text-amber-400 font-bold">@toxic_av5gaming</span> | Admin: <span class="text-amber-400 font-bold">@zone_push_official</span></p>
+            </div>
+        </div>
+
+        <!-- PUBLIC ADMIN / EDITOR TRIGGER BUTTON -->
+        <div class="flex justify-end">
+            <button onclick="openAdminPassModal()" class="bg-[#161925] hover:bg-[#202436] text-amber-400 border border-amber-500/40 text-[11px] font-bold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-user-shield"></i>
+                <span id="admin-trigger-text">Admin Panel</span>
+            </button>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="flex space-x-1 bg-[#0f111a] p-1.5 rounded-xl border border-slate-800 text-[11px] font-bold shadow-inner overflow-x-auto">
+            <button onclick="switchTab('tournaments')" id="tab-btn-tournaments" class="flex-1 py-2.5 px-3 rounded-lg bg-red-600 text-white transition shadow-md flex items-center justify-center space-x-1 whitespace-nowrap">
+                <i class="fa-solid fa-trophy"></i><span>Tournaments</span>
+            </button>
+            <button onclick="switchTab('guild-bots')" id="tab-btn-guild-bots" class="flex-1 py-2.5 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center space-x-1 whitespace-nowrap">
+                <i class="fa-solid fa-robot"></i><span>Guild Bots</span>
+            </button>
+            <button onclick="switchTab('live-chat')" id="tab-btn-live-chat" class="flex-1 py-2.5 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center space-x-1 whitespace-nowrap">
+                <i class="fa-solid fa-comments"></i><span>Live Chat</span>
+            </button>
+            <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="flex-1 py-2.5 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center space-x-1 whitespace-nowrap">
+                <i class="fa-solid fa-medal"></i><span>Leaderboard</span>
+            </button>
+            <button onclick="switchTab('my-matches')" id="tab-btn-my-matches" class="flex-1 py-2.5 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center space-x-1 whitespace-nowrap">
+                <i class="fa-solid fa-shield-halved"></i><span>My Matches</span>
+            </button>
+            <button onclick="switchTab('admin-panel')" id="tab-btn-admin-panel" class="hidden flex-1 py-2.5 px-3 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/40 transition flex items-center justify-center space-x-1 whitespace-nowrap">
+                <i class="fa-solid fa-gears"></i><span>Admin Controls</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: TOURNAMENTS LIST -->
+        <div id="tab-tournaments" class="space-y-4">
+            
+            <!-- FREE TOURNAMENTS SECTION -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center">
+                        <i class="fa-solid fa-gift mr-1.5"></i> Free Tournaments (7 Active)
+                    </h3>
+                    <span class="text-[10px] text-slate-400">Instant Join</span>
+                </div>
+
+                <!-- Free Match 1 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-emerald-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded border border-emerald-500/30 tracking-wider">FREE ENTRY • SOLO</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Free Daily Bermuda Cup #1</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>500 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">TYPE</span><strong class="text-emerald-400 font-bold uppercase">Instant</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Bermuda</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">42/48</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Free Daily Bermuda Cup #1', 'Bermuda', 'free', 0)" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Join Free Match Now</button>
+                </div>
+
+                <!-- Free Match 2 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-emerald-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded border border-emerald-500/30 tracking-wider">FREE ENTRY • SQUAD</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Free Purgatory Rush #2</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>800 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">TYPE</span><strong class="text-emerald-400 font-bold uppercase">Instant</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Purgatory</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">10/12</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Free Purgatory Rush #2', 'Purgatory', 'free', 0)" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Join Free Match Now</button>
+                </div>
+
+                <!-- Free Match 3 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-emerald-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded border border-emerald-500/30 tracking-wider">FREE ENTRY • SOLO</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Alpine Beginners Cup #3</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>400 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">TYPE</span><strong class="text-emerald-400 font-bold uppercase">Instant</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Alpine</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">38/48</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Alpine Beginners Cup #3', 'Alpine', 'free', 0)" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Join Free Match Now</button>
+                </div>
+
+                <!-- Free Match 4 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-emerald-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded border border-emerald-500/30 tracking-wider">FREE ENTRY • DUO</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Kalahari Duo Battle #4</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>600 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">TYPE</span><strong class="text-emerald-400 font-bold uppercase">Instant</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Kalahari</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">20/24</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Kalahari Duo Battle #4', 'Kalahari', 'free', 0)" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Join Free Match Now</button>
+                </div>
+
+                <!-- Free Match 5 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-emerald-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded border border-emerald-500/30 tracking-wider">FREE ENTRY • SOLO</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Nexterra Training Cup #5</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>500 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">TYPE</span><strong class="text-emerald-400 font-bold uppercase">Instant</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Nexterra</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">30/48</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Nexterra Training Cup #5', 'Nexterra', 'free', 0)" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Join Free Match Now</button>
+                </div>
+
+                <!-- Free Match 6 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-emerald-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded border border-emerald-500/30 tracking-wider">FREE ENTRY • SQUAD</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Bermuda Night Squad #6</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>1,200 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">TYPE</span><strong class="text-emerald-400 font-bold uppercase">Instant</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Bermuda</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">11/12</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Bermuda Night Squad #6', 'Bermuda', 'free', 0)" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Join Free Match Now</button>
+                </div>
+
+                <!-- Free Match 7 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-emerald-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded border border-emerald-500/30 tracking-wider">FREE ENTRY • SOLO</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Weekend Special Free Cup #7</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>750 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">TYPE</span><strong class="text-emerald-400 font-bold uppercase">Instant</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Purgatory</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">45/48</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Weekend Special Free Cup #7', 'Purgatory', 'free', 0)" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Join Free Match Now</button>
+                </div>
+            </div>
+
+            <!-- PAID TOURNAMENTS SECTION (Costs 50 Coins each) -->
+            <div class="space-y-3 pt-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center">
+                        <i class="fa-solid fa-crown mr-1.5"></i> Paid Tournaments (7 Active - Entry: 50 Coins)
+                    </h3>
+                    <span class="text-[10px] text-slate-400">Requires Redeem Code</span>
+                </div>
+
+                <!-- Paid Match 1 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-amber-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-400 font-black px-2 py-0.5 rounded border border-amber-500/30 tracking-wider">PAID ENTRY • 50 COINS</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Pro Grandmaster Championship #1</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>5,000 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">ENTRY</span><strong class="text-amber-400 font-bold">50 Coins</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Bermuda</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">10/12</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Pro Grandmaster Championship #1', 'Bermuda', 'paid', 50)" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Unlock with 50 Coins & Code</button>
+                </div>
+
+                <!-- Paid Match 2 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-amber-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-400 font-black px-2 py-0.5 rounded border border-amber-500/30 tracking-wider">PAID ENTRY • 50 COINS</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Elite Solo Cash Battle #2</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>2,500 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">ENTRY</span><strong class="text-amber-400 font-bold">50 Coins</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Purgatory</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">40/48</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Elite Solo Cash Battle #2', 'Purgatory', 'paid', 50)" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Unlock with 50 Coins & Code</button>
+                </div>
+
+                <!-- Paid Match 3 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-amber-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-400 font-black px-2 py-0.5 rounded border border-amber-500/30 tracking-wider">PAID ENTRY • 50 COINS</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">High Stakes Duo Cup #3</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>3,000 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">ENTRY</span><strong class="text-amber-400 font-bold">50 Coins</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Alpine</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">22/24</strong></div>
+                    </div>
+                    <button onclick="handleJoin('High Stakes Duo Cup #3', 'Alpine', 'paid', 50)" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Unlock with 50 Coins & Code</button>
+                </div>
+
+                <!-- Paid Match 4 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-amber-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-400 font-black px-2 py-0.5 rounded border border-amber-500/30 tracking-wider">PAID ENTRY • 50 COINS</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">VIP Legend Squad War #4</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>7,500 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">ENTRY</span><strong class="text-amber-400 font-bold">50 Coins</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Kalahari</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">8/12</strong></div>
+                    </div>
+                    <button onclick="handleJoin('VIP Legend Squad War #4', 'Kalahari', 'paid', 50)" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Unlock with 50 Coins & Code</button>
+                </div>
+
+                <!-- Paid Match 5 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-amber-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-400 font-black px-2 py-0.5 rounded border border-amber-500/30 tracking-wider">PAID ENTRY • 50 COINS</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Nexterra Apex Pro #5</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>4,000 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">ENTRY</span><strong class="text-amber-400 font-bold">50 Coins</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Nexterra</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">35/48</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Nexterra Apex Pro #5', 'Nexterra', 'paid', 50)" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Unlock with 50 Coins & Code</button>
+                </div>
+
+                <!-- Paid Match 6 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-amber-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-400 font-black px-2 py-0.5 rounded border border-amber-500/30 tracking-wider">PAID ENTRY • 50 COINS</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Bermuda Ultimate Clash #6</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>10,000 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">ENTRY</span><strong class="text-amber-400 font-bold">50 Coins</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Bermuda</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">11/12</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Bermuda Ultimate Clash #6', 'Bermuda', 'paid', 50)" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Unlock with 50 Coins & Code</button>
+                </div>
+
+                <!-- Paid Match 7 -->
+                <div class="bg-[#0f111a] border border-slate-800 hover:border-amber-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-400 font-black px-2 py-0.5 rounded border border-amber-500/30 tracking-wider">PAID ENTRY • 50 COINS</span>
+                            <h4 class="font-bold text-sm text-white mt-1.5">Nightly Masters Championship #7</h4>
+                        </div>
+                        <div class="text-right"><span class="text-[10px] text-slate-400">PRIZE</span><p class="text-sm font-black text-amber-400"><i class="fa-solid fa-coins mr-1"></i>3,500 Coins</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center bg-[#090a0f] p-2 rounded-lg text-[11px] text-slate-400 border border-slate-800/80">
+                        <div><span class="block text-[10px] text-slate-500">ENTRY</span><strong class="text-amber-400 font-bold">50 Coins</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">MAP</span><strong class="text-slate-200">Purgatory</strong></div>
+                        <div><span class="block text-[10px] text-slate-500">SLOTS</span><strong class="text-red-400 font-bold">42/48</strong></div>
+                    </div>
+                    <button onclick="handleJoin('Nightly Masters Championship #7', 'Purgatory', 'paid', 50)" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Unlock with 50 Coins & Code</button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- TAB 2: GUILD BOTS SECTION -->
+        <div id="tab-guild-bots" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xs font-bold text-red-500 uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-robot mr-1.5"></i> Choose Your Guild Bot Plan
+                </h3>
+                <span class="text-[10px] text-slate-400">Instant Activation</span>
+            </div>
+
+            <!-- Bot Plan 1: Simple Guild Bot -->
+            <div class="bg-[#0f111a] border border-slate-800 hover:border-red-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-[10px] bg-red-500/20 text-red-400 font-black px-2 py-0.5 rounded border border-red-500/30 tracking-wider">STARTER PLAN</span>
+                        <h4 class="font-bold text-sm text-white mt-1.5">Simple Guild Bot</h4>
+                    </div>
+                    <div class="text-right"><span class="text-[10px] text-slate-400">PRICE</span><p class="text-sm font-black text-emerald-400">₹50</p></div>
+                </div>
+                <div class="bg-[#090a0f] p-2.5 rounded-lg text-[11px] text-slate-300 border border-slate-800/80 flex items-center justify-between">
+                    <span>Guaranteed Glory:</span>
+                    <strong class="text-amber-400 font-bold">1,000 Glory</strong>
+                </div>
+                <button onclick="openGuildBotModal('Simple Guild Bot', 50)" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Pay and Submit (Only Code)</button>
+            </div>
+
+            <!-- Bot Plan 2: Moderate Bot -->
+            <div class="bg-[#0f111a] border border-slate-800 hover:border-red-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-[10px] bg-amber-500/20 text-amber-400 font-black px-2 py-0.5 rounded border border-amber-500/30 tracking-wider">POPULAR PLAN</span>
+                        <h4 class="font-bold text-sm text-white mt-1.5">Moderate Bot</h4>
+                    </div>
+                    <div class="text-right"><span class="text-[10px] text-slate-400">PRICE</span><p class="text-sm font-black text-emerald-400">₹150</p></div>
+                </div>
+                <div class="bg-[#090a0f] p-2.5 rounded-lg text-[11px] text-slate-300 border border-slate-800/80 flex items-center justify-between">
+                    <span>Guaranteed Glory:</span>
+                    <strong class="text-amber-400 font-bold">10,000 Glory</strong>
+                </div>
+                <button onclick="openGuildBotModal('Moderate Bot', 150)" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Pay and Submit (Only Code)</button>
+            </div>
+
+            <!-- Bot Plan 3: Guild Max Bot Level 1 to 7 -->
+            <div class="bg-[#0f111a] border border-slate-800 hover:border-red-500/50 transition rounded-xl p-4 space-y-3 shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-[10px] bg-purple-500/20 text-purple-400 font-black px-2 py-0.5 rounded border border-purple-500/30 tracking-wider">ULTIMATE MAX</span>
+                        <h4 class="font-bold text-sm text-white mt-1.5">Guild Max Bot Level 1 to 7</h4>
+                    </div>
+                    <div class="text-right"><span class="text-[10px] text-slate-400">PRICE</span><p class="text-sm font-black text-emerald-400">₹500</p></div>
+                </div>
+                <div class="bg-[#090a0f] p-2.5 rounded-lg text-[11px] text-slate-300 border border-slate-800/80 flex items-center justify-between">
+                    <span>Glory Status:</span>
+                    <strong class="text-purple-400 font-bold">Unlimited Glory</strong>
+                </div>
+                <button onclick="openGuildBotModal('Guild Max Bot Level 1 to 7', 500)" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg uppercase tracking-wide">Pay and Submit (Only Code)</button>
+            </div>
+        </div>
+
+        <!-- NEW TAB: LIVE CHAT & ROOM DISCUSSION BOX -->
+        <div id="tab-live-chat" class="hidden space-y-3">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xs font-bold text-red-500 uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-comments mr-1.5"></i> Global Room Discussion & Match Chat
+                </h3>
+                <span class="text-[10px] text-emerald-400 font-mono animate-pulse">● Live Stream</span>
+            </div>
+            
+            <div class="bg-[#0f111a] border border-slate-800 rounded-2xl flex flex-col h-[400px] shadow-xl overflow-hidden">
+                <!-- Chat Message Feed -->
+                <div id="chat-messages" class="flex-1 p-3 overflow-y-auto custom-scrollbar space-y-3 text-xs">
+                    <div class="bg-[#121522] p-2.5 rounded-xl border border-slate-800/80 space-y-1">
+                        <div class="flex justify-between items-center text-[10px]">
+                            <strong class="text-amber-400">@toxic_av5gaming <span class="bg-red-500/20 text-red-400 px-1 py-0.2 rounded ml-1 font-mono">OWNER</span></strong>
+                            <span class="text-slate-500">Just now</span>
+                        </div>
+                        <p class="text-slate-300">Welcome everyone to FF Arena! All custom rooms are active. Drop your squad recruitments and talk strategy here!</p>
+                    </div>
+                    <div class="bg-[#121522] p-2.5 rounded-xl border border-slate-800/80 space-y-1">
+                        <div class="flex justify-between items-center text-[10px]">
+                            <strong class="text-red-400">@zone_push_official <span class="bg-amber-500/20 text-amber-400 px-1 py-0.2 rounded ml-1 font-mono">ADMIN</span></strong>
+                            <span class="text-slate-500">2m ago</span>
+                        </div>
+                        <p class="text-slate-300">Paid match redeem codes are working properly. Make sure to deposit coins before unlocking matches.</p>
+                    </div>
+                </div>
+
+                <!-- Chat Input Box -->
+                <div class="p-3 bg-[#090a0f] border-t border-slate-800 flex space-x-2">
+                    <input type="text" id="chat-input" placeholder="Type message or squad info..." class="flex-1 bg-[#0f111a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500">
+                    <button onclick="sendChatMessage()" class="bg-red-600 hover:bg-red-500 text-white font-black px-4 py-2 rounded-xl text-xs transition shadow-lg">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: LEADERBOARD -->
+        <div id="tab-leaderboard" class="hidden space-y-3">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-trophy mr-1.5"></i> Top 50 Pro Players Leaderboard
+                </h3>
+                <span class="text-[10px] text-slate-400">Updated Live</span>
+            </div>
+            <div class="bg-[#0f111a] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div class="p-3 bg-[#121522] border-b border-slate-800 grid grid-cols-12 text-[10px] font-black text-slate-400 tracking-wider">
+                    <div class="col-span-2 text-center">RANK</div>
+                    <div class="col-span-6">PLAYER NAME</div>
+                    <div class="col-span-4 text-right">EARNED</div>
+                </div>
+                <div id="leaderboard-list" class="divide-y divide-slate-800/60 max-h-[450px] overflow-y-auto custom-scrollbar text-xs">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: MY MATCHES -->
+        <div id="tab-my-matches" class="hidden space-y-3">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your Registered Room Battles</h3>
+            <div id="joined-matches-list" class="space-y-3">
+                <div class="bg-[#0f111a] border border-slate-800 rounded-xl p-6 text-center text-slate-500 text-xs py-12">
+                    <i class="fa-solid fa-ghost text-3xl mb-2 text-slate-600 block"></i>
+                    No matches joined yet. Pick a tournament and jump in!
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: ADMIN / EDITOR CONTROLS PANEL -->
+        <div id="tab-admin-panel" class="hidden space-y-4">
+            <div class="bg-gradient-to-r from-amber-950 via-yellow-900 to-[#12080a] rounded-2xl p-4 border border-amber-500/60 shadow-xl space-y-2">
+                <div class="inline-flex items-center space-x-2 bg-amber-500 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-full shadow tracking-wider uppercase">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>EDITOR / ADMIN MODE UNLOCKED</span>
+                </div>
+                <h3 class="text-lg font-black text-white">Welcome, Management Team</h3>
+                <p class="text-xs text-slate-300">You can manage bots, update tournaments, and verify redemptions directly from here.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- Admin Card 1: Add/Manage Tournaments -->
+                <div class="bg-[#0f111a] border border-slate-800 rounded-xl p-4 space-y-3 shadow-lg">
+                    <h4 class="font-bold text-sm text-amber-400 flex items-center"><i class="fa-solid fa-plus-circle mr-2"></i>Quick Tournament Config</h4>
+                    <p class="text-xs text-slate-400">Launch a custom room tournament instantly with custom prize pools.</p>
+                    <div class="space-y-2">
+                        <input type="text" id="admin-new-title" placeholder="Tournament Title" class="w-full bg-[#090a0f] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                        <input type="number" id="admin-new-prize" placeholder="Prize Coins" class="w-full bg-[#090a0f] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                        <button onclick="adminAddTournament()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2 rounded-xl text-xs transition">Add Match</button>
+                    </div>
+                </div>
+
+                <!-- Admin Card 2: Manage Bot Submissions & Logs -->
+                <div class="bg-[#0f111a] border border-slate-800 rounded-xl p-4 space-y-3 shadow-lg">
+                    <h4 class="font-bold text-sm text-red-400 flex items-center"><i class="fa-solid fa-robot mr-2"></i>Bot Activation Log</h4>
+                    <p class="text-xs text-slate-400">Recent customer bot activations submitted via code.</p>
+                    <div id="admin-bot-logs" class="bg-[#090a0f] p-3 rounded-xl border border-slate-800 text-[11px] text-slate-300 space-y-1.5 max-h-36 overflow-y-auto">
+                        <div class="text-slate-500 italic">No recent bot codes submitted yet.</div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="lockAdminPanel()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">Lock / Exit Admin Mode</button>
+        </div>
+
+        <!-- FOOTER CONTACT & OWNER DETAILS -->
+        <footer class="bg-[#0f111a] border border-slate-800 rounded-2xl p-4 space-y-3 text-center text-xs text-slate-400 mt-6">
+            <div class="border-b border-slate-800 pb-2 flex justify-around font-bold text-[11px]">
+                <span>Owner: <strong class="text-amber-400">@toxic_av5gaming</strong></span>
+                <span>Admin: <strong class="text-red-400">@zone_push_official</strong></span>
+            </div>
+            <div class="space-y-1 text-[11px]">
+                <p><i class="fa-solid fa-envelope mr-1 text-red-500"></i> <a href="mailto:av55gamingofficial@gmail.com" class="hover:underline text-slate-300">av55gamingofficial@gmail.com</a></p>
+                <p><i class="fa-solid fa-envelope mr-1 text-red-500"></i> <a href="mailto:garenaofficialindia.pro@gmail.com" class="hover:underline text-slate-300">garenaofficialindia.pro@gmail.com</a></p>
+                <p><i class="fa-brands fa-instagram mr-1 text-pink-500"></i> <a href="https://instagram.com/toxic_av5gaming" target="_blank" class="hover:underline text-slate-300">@toxic_av5gaming</a></p>
+            </div>
+            <p class="text-[10px] text-slate-600 pt-1">© 2026 FF ARENA. All Rights Reserved.</p>
+        </footer>
+
+    </main>
+
+    <!-- Bottom Gaming Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#0f111a] border-t border-red-900/40 py-2.5 px-4 flex justify-around text-[10px] text-slate-400 z-20 shadow-2xl">
+        <button onclick="switchTab('tournaments')" id="nav-btn-play" class="flex flex-col items-center text-red-500 font-bold">
+            <i class="fa-solid fa-gamepad text-base"></i>
+            <span>Play</span>
+        </button>
+        <button onclick="switchTab('guild-bots')" id="nav-btn-guilds" class="flex flex-col items-center hover:text-white transition font-medium">
+            <i class="fa-solid fa-robot text-base"></i>
+            <span>Bots</span>
+        </button>
+        <button onclick="switchTab('live-chat')" id="nav-btn-chat" class="flex flex-col items-center hover:text-white transition font-medium">
+            <i class="fa-solid fa-comments text-base"></i>
+            <span>Chat</span>
+        </button>
+        <button onclick="switchTab('leaderboard')" id="nav-btn-leaderboard" class="flex flex-col items-center hover:text-white transition font-medium">
+            <i class="fa-solid fa-medal text-base"></i>
+            <span>Leaderboard</span>
+        </button>
+        <button onclick="switchTab('my-matches')" id="nav-btn-matches" class="flex flex-col items-center hover:text-white transition font-medium">
+            <i class="fa-solid fa-list-check text-base"></i>
+            <span>Matches</span>
+        </button>
+    </nav>
+
+    <!-- Modal for Redeem Code Input (Tournaments) -->
+    <div id="redeem-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-[#0f111a] border border-amber-500/40 rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
+            <div class="flex items-center space-x-2 text-amber-400 font-black text-base">
+                <i class="fa-solid fa-ticket"></i>
+                <span>ENTER REDEEM CODE</span>
+            </div>
+            <p class="text-xs text-slate-400">Paid tournament slot requires 50 coins entry fee and a valid secure code to register.</p>
+            
+            <input type="text" id="redeem-input" placeholder="ENTER CODE" class="w-full bg-[#090a0f] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 font-mono uppercase tracking-widest text-center">
+            
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">Cancel</button>
+                <button onclick="verifyRedeemCode()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg shadow-amber-500/20">Pay 50 Coins & Join</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Guild Bot Submission (Only Code) -->
+    <div id="guild-bot-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-[#0f111a] border border-red-500/40 rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2 text-red-500 font-black text-base">
+                    <i class="fa-solid fa-robot"></i>
+                    <span id="guild-modal-title">GUILD BOT ACTIVATION</span>
+                </div>
+                <button onclick="closeGuildBotModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <p id="guild-modal-desc" class="text-xs text-slate-400">Pay and submit your code to activate the guild bot service.</p>
+            
+            <input type="text" id="guild-code-input" placeholder="ENTER REDEEM / PAYMENT CODE" class="w-full bg-[#090a0f] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500 font-mono uppercase tracking-widest text-center">
+            
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeGuildBotModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">Cancel</button>
+                <button onclick="submitGuildBotCode()" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg shadow-red-600/20">Submit Code</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN / EDITOR PASSCODE MODAL -->
+    <div id="admin-pass-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-[#0f111a] border border-amber-500/40 rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
+            <div class="flex items-center space-x-2 text-amber-400 font-black text-base">
+                <i class="fa-solid fa-user-shield"></i>
+                <span>ADMIN ACCESS</span>
+            </div>
+            <p class="text-xs text-slate-400">Enter management passcode to unlock the editor and admin controls menu.</p>
+            
+            <input type="password" id="admin-passcode-input" placeholder="ENTER PASSCODE" class="w-full bg-[#090a0f] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 font-mono uppercase tracking-widest text-center">
+            
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeAdminPassModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">Cancel</button>
+                <button onclick="verifyAdminPasscode()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs transition shadow-lg">Unlock Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WALLET MAIN SELECTION MENU MODAL -->
+    <div id="wallet-menu-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-[#0f111a] border border-amber-500/40 rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2 text-amber-400 font-black text-base">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>FF ARENA WALLET</span>
+                </div>
+                <button onclick="closeWalletMenu()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="bg-[#090a0f] p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] text-slate-400 block">AVAILABLE COINS</span>
+                    <strong id="wallet-display-coins" class="text-amber-400 text-lg font-black"><i class="fa-solid fa-coins mr-1"></i>500</strong>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-400 block">WON DIAMONDS</span>
+                    <strong id="wallet-display-diamonds" class="text-cyan-400 text-lg font-black"><i class="fa-solid fa-gem mr-1"></i>0</strong>
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <button onclick="openDepositModal()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black py-3 rounded-xl text-xs transition shadow-lg flex items-center justify-center space-x-2 uppercase">
+                    <i class="fa-solid fa-arrow-down-long text-sm"></i>
+                    <span>Deposit Coins (₹1000 = 100 Coins)</span>
+                </button>
+                <button onclick="openWithdrawModal()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black py-3 rounded-xl text-xs transition shadow-lg flex items-center justify-center space-x-2 uppercase">
+                    <i class="fa-solid fa-arrow-up-long text-sm"></i>
+                    <span>Withdraw Diamonds (1 Diamond = ₹0.1)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEPOSIT MODAL -->
+    <div id="deposit-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-[#0f111a] border border-emerald-500/40 rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2 text-emerald-400 font-black text-base">
+                    <i class="fa-solid fa-circle-down"></i>
+                    <span>DEPOSIT REAL MONEY</span>
+                </div>
+                <button onclick="closeDepositModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <p class="text-xs text-slate-400">Rate: 1000 Rupees = 100 Coins (₹10 = 1 Coin)</p>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] text-slate-400 block mb-1">ENTER AMOUNT IN RUPEES (₹)</label>
+                    <input type="number" id="deposit-inr" placeholder="e.g. 1000" oninput="calculateDepositCoins()" class="w-full bg-[#090a0f] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono">
+                </div>
+                <div class="bg-[#090a0f] p-3 rounded-xl border border-slate-800 text-xs flex justify-between">
+                    <span class="text-slate-400">You will get Coins:</span>
+                    <strong id="deposit-calc-result" class="text-amber-400 font-bold">0 Coins</strong>
+                </div>
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeDepositModal()" class="flex-1 bg-slate-800 text-white font-semibold py-2.5 rounded-xl text-xs">Cancel</button>
+                <button onclick="processDeposit()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg">Pay & Add Coins</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WITHDRAW MODAL -->
+    <div id="withdraw-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-[#0f111a] border border-cyan-500/40 rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2 text-cyan-400 font-black text-base">
+                    <i class="fa-solid fa-circle-up"></i>
+                    <span>WITHDRAW DIAMONDS</span>
+                </div>
+                <button onclick="closeWithdrawModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <p class="text-xs text-slate-400">1 Diamond = ₹0.1 | Minimum Withdrawal = ₹50 (500 Diamonds)</p>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] text-slate-400 block mb-1">ENTER DIAMONDS TO WITHDRAW</label>
+                    <input type="number" id="withdraw-diamonds-input" placeholder="Min 500 Diamonds" oninput="calculateWithdrawRupees()" class="w-full bg-[#090a0f] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono">
+                </div>
+                <div class="bg-[#090a0f] p-3 rounded-xl border border-slate-800 text-xs flex justify-between">
+                    <span class="text-slate-400">Total Value in INR:</span>
+                    <strong id="withdraw-calc-result" class="text-emerald-400 font-bold">₹0.0</strong>
+                </div>
+
+                <div>
+                    <label class="text-[10px] text-slate-400 block mb-1">SELECT WITHDRAWAL METHOD</label>
+                    <select id="withdraw-method" onchange="toggleWithdrawFields()" class="w-full bg-[#090a0f] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                        <option value="upi">UPI ID / GPay / PhonePer</option>
+                        <option value="bank">Direct Bank Transfer</option>
+                        <option value="code">Generate Redeem Code (Play Store/Free Fire)</option>
+                    </select>
+                </div>
+
+                <div id="method-fields">
+                    <input type="text" id="withdraw-detail" placeholder="Enter UPI ID (e.g. user@oksbi)" class="w-full bg-[#090a0f] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500 font-mono">
+                </div>
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeWithdrawModal()" class="flex-1 bg-slate-800 text-white font-semibold py-2.5 rounded-xl text-xs">Cancel</button>
+                <button onclick="processWithdraw()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl text-xs transition shadow-lg">Submit Request</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript App Logic -->
+    <script>
+        let userCoins = 500;
+        let userDiamonds = 750;
+        let joinedMatches = [];
+        let selectedTournament = null;
+        let selectedGuildPlan = null;
+        const validCodes = ["ARENA2026", "FIREPRO", "MAXBATTLE", "PROVIP", "CHAMPION", "TURBO99", "ELITEFF", "GUILDX", "BOTPASS50", "BOT150", "BOT500"];
+
+        // Generate 50 Top Players for Leaderboard
+        const topPlayers = [];
+        const baseNames = ["TITAN", "NEXUS", "VIPER", "HUNTER", "SHADOW", "STORM", "BLAZE", "COBRA", "PHANTOM", "GHOST", "DEMON", "SNAKE", "WOLF", "GOD", "BADBOY", "KILLER", "RONIN", "NINJA", "BEAST", "ALPHA"];
+        let currentCoinsGen = 25000;
+        for(let i = 1; i <= 50; i++) {
+            const randomName = baseNames[Math.floor(Math.random() * baseNames.length)] + '_' + Math.floor(100 + Math.random() * 900);
+            topPlayers.push({ rank: i, name: randomName, earnings: currentCoinsGen });
+            currentCoinsGen -= Math.floor(300 + Math.random() * 400);
+        }
+
+        function renderLeaderboard() {
+            const listContainer = document.getElementById('leaderboard-list');
+            listContainer.innerHTML = '';
+            topPlayers.forEach(p => {
+                let badgeColor = "text-slate-300";
+                if(p.rank === 1) badgeColor = "text-yellow-400 font-black";
+                else if(p.rank === 2) badgeColor = "text-slate-200 font-black";
+                else if(p.rank === 3) badgeColor = "text-amber-600 font-black";
+
+                const row = document.createElement('div');
+                row.className = "p-3 grid grid-cols-12 items-center hover:bg-[#121522] transition";
+                row.innerHTML = `
+                    <div class="col-span-2 text-center font-mono font-bold ${badgeColor}">#${p.rank}</div>
+                    <div class="col-span-6 font-bold text-white flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                        <span class="truncate">${p.name}</span>
+                    </div>
+                    <div class="col-span-4 text-right font-black text-amber-400 flex items-center justify-end space-x-1">
+                        <i class="fa-solid fa-coins text-[10px]"></i>
+                        <span>${p.earnings.toLocaleString()}</span>
+                    </div>
+                `;
+                listContainer.appendChild(row);
+            });
+        }
+        renderLeaderboard();
+
+        function updateWalletDisplay() {
+            document.getElementById('user-coins').innerText = userCoins;
+            document.getElementById('wallet-display-coins').innerHTML = `<i class="fa-solid fa-coins mr-1"></i>${userCoins}`;
+            document.getElementById('wallet-display-diamonds').innerHTML = `<i class="fa-solid fa-gem mr-1"></i>${userDiamonds}`;
+        }
+
+        function openWalletMenu() {
+            updateWalletDisplay();
+            document.getElementById('wallet-menu-modal').classList.remove('hidden');
+        }
+
+        function closeWalletMenu() {
+            document.getElementById('wallet-menu-modal').classList.add('hidden');
+        }
+
+        function openDepositModal() {
+            closeWalletMenu();
+            document.getElementById('deposit-inr').value = '';
+            document.getElementById('deposit-calc-result').innerText = '0 Coins';
+            document.getElementById('deposit-modal').classList.remove('hidden');
+        }
+
+        function closeDepositModal() {
+            document.getElementById('deposit-modal').classList.add('hidden');
+        }
+
+        function calculateDepositCoins() {
+            const inr = parseFloat(document.getElementById('deposit-inr').value) || 0;
+            const coins = Math.floor(inr / 10);
+            document.getElementById('deposit-calc-result').innerText = coins + ' Coins';
+        }
+
+        function processDeposit() {
+            const inr = parseFloat(document.getElementById('deposit-inr').value) || 0;
+            if(inr < 10) {
+                alert("⚠️ Minimum deposit amount is ₹10!");
+                return;
+            }
+            const addedCoins = Math.floor(inr / 10);
+            userCoins += addedCoins;
+            updateWalletDisplay();
+            closeDepositModal();
+            alert(`🎉 Successfully deposited ₹${inr}! Added ${addedCoins} coins to your wallet.`);
+        }
+
+        function openWithdrawModal() {
+            closeWalletMenu();
+            document.getElementById('withdraw-diamonds-input').value = '';
+            document.getElementById('withdraw-calc-result').innerText = '₹0.0';
+            document.getElementById('withdraw-modal').classList.remove('hidden');
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdraw-modal').classList.add('hidden');
+        }
+
+        function calculateWithdrawRupees() {
+            const diamonds = parseInt(document.getElementById('withdraw-diamonds-input').value) || 0;
+            const rupees = diamonds * 0.1;
+            document.getElementById('withdraw-calc-result').innerText = '₹' + rupees.toFixed(1);
+        }
+
+        function toggleWithdrawFields() {
+            const method = document.getElementById('withdraw-method').value;
+            const field = document.getElementById('withdraw-detail');
+            if(method === 'upi') {
+                field.placeholder = "Enter UPI ID (e.g. user@oksbi)";
+            } else if(method === 'bank') {
+                field.placeholder = "Enter Account No & IFSC Code";
+            } else if(method === 'code') {
+                field.placeholder = "Enter Gmail / Phone for Redeem Code delivery";
+            }
+        }
+
+        function processWithdraw() {
+            const diamonds = parseInt(document.getElementById('withdraw-diamonds-input').value) || 0;
+            const detail = document.getElementById('withdraw-detail').value.trim();
+            const rupees = diamonds * 0.1;
+
+            if(diamonds < 500) {
+                alert("⚠️ Minimum withdrawal is 500 Diamonds (₹50)!");
+                return;
+            }
+            if(diamonds > userDiamonds) {
+                alert("❌ You don't have enough diamonds in your wallet!");
+                return;
+            }
+            if(!detail) {
+                alert("⚠️ Please enter your payout destination details.");
+                return;
+            }
+
+            userDiamonds -= diamonds;
+            updateWalletDisplay();
+            closeWithdrawModal();
+            alert(`✅ Withdrawal request of ₹${rupees} (${diamonds} Diamonds) submitted successfully! It will be transferred within 24 hours.`);
+        }
+
+        function switchTab(tabId) {
+            ['tournaments', 'guild-bots', 'live-chat', 'leaderboard', 'my-matches', 'admin-panel'].forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                if(el) el.classList.add('hidden');
+            });
+            const activeTab = document.getElementById('tab-' + tabId);
+            if(activeTab) activeTab.classList.remove('hidden');
+            
+            // Navbar button state highlighting
+            ['play', 'guilds', 'chat', 'leaderboard', 'matches'].forEach(n => {
+                const btn = document.getElementById('nav-btn-' + n);
+                if(btn) {
+                    btn.classList.remove('text-red-500', 'font-bold');
+                    btn.classList.add('text-slate-400', 'font-medium');
+                }
+            });
+
+            if(tabId === 'tournaments') {
+                document.getElementById('nav-btn-play').classList.add('text-red-500', 'font-bold');
+                document.getElementById('nav-btn-play').classList.remove('text-slate-400', 'font-medium');
+            } else if(tabId === 'guild-bots') {
+                document.getElementById('nav-btn-guilds').classList.add('text-red-500', 'font-bold');
+                document.getElementById('nav-btn-guilds').classList.remove('text-slate-400', 'font-medium');
+            } else if(tabId === 'live-chat') {
+                document.getElementById('nav-btn-chat').classList.add('text-red-500', 'font-bold');
+                document.getElementById('nav-btn-chat').classList.remove('text-slate-400', 'font-medium');
+            } else if(tabId === 'leaderboard') {
+                document.getElementById('nav-btn-leaderboard').classList.add('text-red-500', 'font-bold');
+                document.getElementById('nav-btn-leaderboard').classList.remove('text-slate-400', 'font-medium');
+            } else if(tabId === 'my-matches') {
+                document.getElementById('nav-btn-matches').classList.add('text-red-500', 'font-bold');
+                document.getElementById('nav-btn-matches').classList.remove('text-slate-400', 'font-medium');
+            }
+        }
+
+        function openAdminPassModal() {
+            document.getElementById('admin-passcode-input').value = '';
+            document.getElementById('admin-pass-modal').classList.remove('hidden');
+        }
+
+        function closeAdminPassModal() {
+            document.getElementById('admin-pass-modal').classList.add('hidden');
+        }
+
+        function verifyAdminPasscode() {
+            const pass = document.getElementById('admin-passcode-input').value.trim();
+            if(pass === "TOXIC LEGEND") {
+                closeAdminPassModal();
+                document.getElementById('tab-btn-admin-panel').classList.remove('hidden');
+                switchTab('admin-panel');
+                alert("🔓 Success! Editor and Admin Panel unlocked.");
+            } else {
+                alert("❌ Incorrect passcode! Access denied.");
+            }
+        }
+
+        function lockAdminPanel() {
+            document.getElementById('tab-btn-admin-panel').classList.add('hidden');
+            switchTab('tournaments');
+            alert("🔒 Admin mode locked securely.");
+        }
+
+        function adminAddTournament() {
+            const title = document.getElementById('admin-new-title').value.trim();
+            const prize = document.getElementById('admin-new-prize').value.trim();
+            if(!title || !prize) {
+                alert("⚠️ Please enter tournament title and prize coins.");
+                return;
+            }
+            alert(`✅ Custom Tournament "${title}" with ${prize} coins prize pool created successfully!`);
+            document.getElementById('admin-new-title').value = '';
+            document.getElementById('admin-new-prize').value = '';
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            const chatMessages = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "bg-[#121522] p-2.5 rounded-xl border border-slate-800/80 space-y-1";
+            msgDiv.innerHTML = `
+                <div class="flex justify-between items-center text-[10px]">
+                    <strong class="text-cyan-400">@Player_Pro <span class="bg-cyan-500/20 text-cyan-300 px-1 py-0.2 rounded ml-1 font-mono">USER</span></strong>
+                    <span class="text-slate-500">Just now</span>
+                </div>
+                <p class="text-slate-300">${escapeHtml(text)}</p>
+            `;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            input.value = '';
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function handleJoin(matchName, mapName, type, entryFee) {
+            if(joinedMatches.some(m => m.name === matchName)) {
+                alert("⚠️ You have already joined this match!");
+                return;
+            }
+
+            if(type === 'free') {
+                const roomId = Math.floor(1000000 + Math.random() * 9000000);
+                const roomPass = Math.floor(1000 + Math.random() * 9000);
+                joinedMatches.push({ name: matchName, map: mapName, id: roomId, pass: roomPass, type: 'Free Entry' });
+                renderJoinedMatches();
+                alert("🎉 SUCCESS! Joined Free Tournament. Custom Room ID & Password generated.");
+                switchTab('my-matches');
+            } else {
+                if(userCoins < entryFee) {
+                    alert(`❌ Insufficient Coins! You need ${entryFee} coins to join this paid tournament. Please deposit coins via wallet.`);
+                    return;
+                }
+                selectedTournament = { name: matchName, map: mapName, fee: entryFee };
+                document.getElementById('redeem-input').value = '';
+                document.getElementById('redeem-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('redeem-modal').classList.add('hidden');
+            selectedTournament = null;
+        }
+
+        function verifyRedeemCode() {
+            const codeInput = document.getElementById('redeem-input').value.trim();
+            if(!codeInput) {
+                alert("⚠️ Please enter a redeem code.");
+                return;
+            }
+
+            if(validCodes.includes(codeInput.toUpperCase())) {
+                userCoins -= selectedTournament.fee;
+                updateWalletDisplay();
+
+                const roomId = Math.floor(1000000 + Math.random() * 9000000);
+                const roomPass = Math.floor(1000 + Math.random() * 9000);
+                
+                joinedMatches.push({ 
+                    name: selectedTournament.name, 
+                    map: selectedTournament.map, 
+                    id: roomId, 
+                    pass: roomPass, 
+                    type: 'Paid (50 Coins Deducted)' 
+                });
+                
+                renderJoinedMatches();
+                closeModal();
+                alert(`🔥 CODE ACCEPTED! 50 Coins deducted. Successfully registered for Paid Championship.`);
+                switchTab('my-matches');
+            } else {
+                alert("❌ INVALID REDEEM CODE! Please enter a valid code to join.");
+            }
+        }
+
+        function openGuildBotModal(planName, price) {
+            selectedGuildPlan = { name: planName, price: price };
+            document.getElementById('guild-modal-title').innerText = planName.toUpperCase();
+            document.getElementById('guild-modal-desc').innerText = `Price: ₹${price}. Please enter your payment/redeem code below to submit.`;
+            document.getElementById('guild-code-input').value = '';
+            document.getElementById('guild-bot-modal').classList.remove('hidden');
+        }
+
+        function closeGuildBotModal() {
+            document.getElementById('guild-bot-modal').classList.add('hidden');
+            selectedGuildPlan = null;
+        }
+
+        function submitGuildBotCode() {
+            const code = document.getElementById('guild-code-input').value.trim();
+            if(!code) {
+                alert("⚠️ Please enter your payment or redeem code.");
+                return;
+            }
+
+            if(validCodes.includes(code.toUpperCase())) {
+                // Add to admin bot log
+                const logContainer = document.getElementById('admin-bot-logs');
+                if(logContainer.innerHTML.includes('No recent bot')) {
+                    logContainer.innerHTML = '';
+                }
+                const logItem = document.createElement('div');
+                logItem.className = "border-b border-slate-800 pb-1 text-slate-300";
+                logItem.innerHTML = `<span class="text-amber-400 font-mono">[${selectedGuildPlan.name}]</span> Code <strong class="text-white">${code}</strong> verified & queued!`;
+                logContainer.prepend(logItem);
+
+                alert(`✅ Success! Your code for "${selectedGuildPlan.name}" has been verified and submitted to Admin (@zone_push_official). Bot will be configured shortly!`);
+                closeGuildBotModal();
+            } else {
+                alert("❌ Invalid code! Please enter a correct payment/redeem code.");
+            }
+        }
+
+        function renderJoinedMatches() {
+            const container = document.getElementById('joined-matches-list');
+            if(joinedMatches.length === 0) {
+                container.innerHTML = `<div class="bg-[#0f111a] border border-slate-800 rounded-xl p-6 text-center text-slate-500 text-xs py-12"><i class="fa-solid fa-ghost text-3xl mb-2 text-slate-600 block"></i>No matches joined yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            joinedMatches.forEach(match => {
+                const div = document.createElement('div');
+                div.className = "bg-[#0f111a] border border-red-600/40 rounded-xl p-4 space-y-3 shadow-xl";
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] bg-red-500/25 text-red-400 font-black px-2 py-0.5 rounded border border-red-500/40">${match.type.toUpperCase()}</span>
+                            <h4 class="custom-match-title font-bold text-sm text-white mt-1.5">${match.name}</h4>
+                        </div>
+                        <span class="text-xs text-slate-400 font-mono">MAP: ${match.map}</span>
+                    </div>
+                    <div class="bg-[#090a0f] p-3 rounded-xl border border-slate-800 text-xs space-y-1.5 font-mono">
+                        <div class="flex justify-between text-slate-400"><span>ROOM ID:</span> <strong class="text-white text-sm select-all">${match.id}</strong></div>
+                        <div class="flex justify-between text-slate-400"><span>PASSWORD:</span> <strong class="text-amber-400 text-sm select-all">${match.pass}</strong></div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
+
